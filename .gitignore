@@ -17,3 +17,4 @@ logs/
 lavalink/Lavalink.jar
 lavalink/plugins/
 lavalink/logs/
+lavalink/application.yml
