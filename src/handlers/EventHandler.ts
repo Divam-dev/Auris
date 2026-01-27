@@ -12,7 +12,7 @@ export default class EventHandler {
 
     const files = fs
       .readdirSync(eventsPath)
-      .filter((file) => file.endsWith(".ts"));
+      .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
 
     for (const file of files) {
       const filePath = path.join(eventsPath, file);

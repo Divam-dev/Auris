@@ -16,7 +16,7 @@ export default class CommandHandler {
       const folderPath = path.join(commandsPath, folder);
       const files = fs
         .readdirSync(folderPath)
-        .filter((file) => file.endsWith(".ts"));
+        .filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
 
       for (const file of files) {
         const filePath = path.join(folderPath, file);
