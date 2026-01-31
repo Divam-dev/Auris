@@ -39,7 +39,27 @@ export default class AurisClient extends Client {
           secure: false,
         },
       ],
+      {
+        reconnectTries: Infinity,
+        reconnectInterval: 10,
+        restTimeout: 60,
+        moveOnDisconnect: false,
+        resume: false,
+      },
     );
+
+    this.kazagumo.shoukaku.on("error", (name, error) => {
+      const isConnRefused =
+        (error as any).code === "ECONNREFUSED" ||
+        (error.name === "AggregateError" &&
+          (error as any).errors?.some((e: any) => e.code === "ECONNREFUSED"));
+
+      if (isConnRefused) {
+        return;
+      }
+
+      console.error(`❌ Node "${name}" Error:`, error);
+    });
   }
 
   async start() {

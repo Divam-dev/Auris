@@ -12,8 +12,13 @@ export default class ClientReady extends Event {
     this.client.kazagumo.shoukaku.on("ready", (name) =>
       console.log(`🎵 Node "${name}" Connected!`),
     );
-    this.client.kazagumo.shoukaku.on("error", (name, error) =>
-      console.error(`❌ Node "${name}" Error:`, error),
+
+    this.client.kazagumo.shoukaku.on("reconnecting", (name) =>
+      console.log(`🔄 Node "${name}" Reconnecting...`),
+    );
+
+    this.client.kazagumo.shoukaku.on("close", (name, code, reason) =>
+      console.log(`❌ Node "${name}" Closed: [${code}] ${reason}`),
     );
   }
 }
