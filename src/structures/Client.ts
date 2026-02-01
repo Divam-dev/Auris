@@ -3,6 +3,7 @@ import { Connectors } from "shoukaku";
 import { Kazagumo } from "kazagumo";
 import CommandHandler from "../handlers/CommandHandler";
 import EventHandler from "../handlers/EventHandler";
+import KazagumoHandler from "../handlers/KazagumoHandler";
 import Command from "./Command";
 
 export default class AurisClient extends Client {
@@ -41,7 +42,7 @@ export default class AurisClient extends Client {
       ],
       {
         reconnectTries: Infinity,
-        reconnectInterval: 10,
+        reconnectInterval: 30,
         restTimeout: 60,
         moveOnDisconnect: false,
         resume: false,
@@ -54,10 +55,7 @@ export default class AurisClient extends Client {
         (error.name === "AggregateError" &&
           (error as any).errors?.some((e: any) => e.code === "ECONNREFUSED"));
 
-      if (isConnRefused) {
-        return;
-      }
-
+      if (isConnRefused) return;
       console.error(`❌ Node "${name}" Error:`, error);
     });
   }
@@ -65,6 +63,7 @@ export default class AurisClient extends Client {
   async start() {
     new CommandHandler(this).load();
     new EventHandler(this).load();
+    new KazagumoHandler(this).load();
 
     await this.login(process.env.DISCORD_TOKEN);
   }
