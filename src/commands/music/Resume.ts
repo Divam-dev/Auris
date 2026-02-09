@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from "discord.js";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
@@ -21,13 +21,25 @@ export default class Resume extends Command {
     if (!player) return;
 
     if (!player.paused) {
+      const errorEmbed = new EmbedBuilder()
+        .setColor("Red")
+        .setDescription("⚠️ The music is **not paused**");
+
       return interaction.reply({
-        content: "⚠️ The music is **not paused**!",
-        ephemeral: true,
+        embeds: [errorEmbed],
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
     player.pause(false);
-    return interaction.reply("▶️ **Resumed**!");
+
+    const embed = new EmbedBuilder()
+      .setColor("Green")
+      .setDescription("▶️ **Resumed!**");
+
+    return interaction.reply({
+      embeds: [embed],
+      flags: MessageFlags.Ephemeral,
+    });
   }
 }

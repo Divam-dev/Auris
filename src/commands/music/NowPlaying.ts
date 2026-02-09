@@ -17,7 +17,11 @@ export default class NowPlaying extends Command {
     const player = this.client.kazagumo.players.get(interaction.guildId);
 
     if (!player || !player.queue.current) {
-      return interaction.reply("❌ Nothing is currently playing.");
+      const embed = new EmbedBuilder()
+        .setColor("Red")
+        .setDescription("❌ Nothing is currently playing.");
+
+      return interaction.reply({ embeds: [embed] });
     }
 
     const track = player.queue.current;

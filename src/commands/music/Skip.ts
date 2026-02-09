@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
@@ -21,13 +21,16 @@ export default class Skip extends Command {
     if (!player) return;
 
     const currentLoop = player.loop;
-
     if (currentLoop !== "none") {
       player.setLoop("none");
     }
 
     player.skip();
 
-    return interaction.reply("⏭️ **Skipped!**");
+    const embed = new EmbedBuilder()
+      .setColor("Green")
+      .setDescription("⏭️ **Skipped!**");
+
+    return interaction.reply({ embeds: [embed] });
   }
 }

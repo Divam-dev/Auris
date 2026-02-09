@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from "discord.js";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
@@ -20,14 +20,25 @@ export default class Stop extends Command {
     const player = this.client.kazagumo.players.get(interaction.guildId);
 
     if (!player) {
+      const errorEmbed = new EmbedBuilder()
+        .setColor("Red")
+        .setDescription("❌ Nothing is playing.");
+
       return interaction.reply({
-        content: "❌ Nothing is playing.",
-        ephemeral: true,
+        embeds: [errorEmbed],
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
     player.destroy();
 
-    return interaction.reply("⏹️ **Stopped**");
+    const embed = new EmbedBuilder()
+      .setColor("Green")
+      .setDescription("⏹️ **Stopped and cleared the queue**");
+
+    return interaction.reply({
+      embeds: [embed],
+      flags: [MessageFlags.Ephemeral],
+    });
   }
 }

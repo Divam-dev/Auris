@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
@@ -41,19 +41,49 @@ export default class Play extends Command {
     });
 
     if (!result.tracks.length)
-      return interaction.editReply("❌ No results found!");
+      return interaction.editReply("❌ No results found");
 
     if (result.type === "PLAYLIST") {
       for (const track of result.tracks) player.queue.add(track);
       if (!player.playing) await player.play();
-      return interaction.editReply(
-        `✅ Added Playlist **${result.playlistName}**!`,
-      );
+
+      const embed = new EmbedBuilder()
+        .setColor("Green")
+        .setTitle("✅ Playlist Added")
+        .setDescription(
+          `**${result.playlistName}** (${result.tracks.length} tracks) added to queue.`,
+        )
+        .setFooter({ text: `Requested by: ${interaction.user.username}` });
+
+      return interaction.editReply({ content: "", embeds: [embed] });
     } else {
       const track = result.tracks[0];
       player.queue.add(track);
+
+      const position = player.queue.length;
+
       if (!player.playing) await player.play();
-      return interaction.editReply(`✅ Added **${track.title}** to the queue!`);
+
+      const posString = position === 0 ? "Now Playing" : `#${position}`;
+      const duration = Utils.formatTime(track.length || 0);
+      const requester = interaction.user.username;
+
+      const embed = new EmbedBuilder()
+        .setColor("Green")
+        .setAuthor({
+          name: "Track Added",
+          iconURL: this.client.user?.displayAvatarURL(),
+        })
+        .setDescription(
+          `**[${track.title}](${track.uri})**\n` +
+            `by **${track.author}** added to queue.`,
+        )
+        .setThumbnail(track.thumbnail || null)
+        .setFooter({
+          text: `Position ${posString} • Duration: ${duration} • By: ${requester}`,
+        });
+
+      return interaction.editReply({ content: "", embeds: [embed] });
     }
   }
 
@@ -65,13 +95,20 @@ export default class Play extends Command {
       const result = await this.client.kazagumo.search(focused, {
         requester: interaction.user,
       });
+
       const choices = result.tracks.slice(0, 25).map((t) => ({
-        name: `${t.title} - ${t.author}`.substring(0, 100),
+        name: `${t.title} - ${t.author} - ${Utils.formatTime(t.length ?? 0)}`.substring(
+          0,
+          100,
+        ),
         value: t.uri || t.title,
       }));
+
       await interaction.respond(choices);
     } catch (error) {
-      await interaction.respond([]);
+      if (!interaction.responded) {
+        await interaction.respond([]).catch(() => {});
+      }
     }
   }
 }

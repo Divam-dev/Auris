@@ -14,21 +14,31 @@ export default class Queue extends Command {
 
   async execute(interaction: any) {
     const player = this.client.kazagumo.players.get(interaction.guildId);
-    if (!player || !player.queue.current)
-      return interaction.reply("❌ Queue is empty.");
+
+    const emptyEmbed = new EmbedBuilder()
+      .setColor("Red")
+      .setDescription("❌ The queue is empty.");
+
+    if (!player || !player.queue.current) {
+      return interaction.reply({ embeds: [emptyEmbed] });
+    }
+
+    if (player.queue.length === 0) {
+      return interaction.reply({ embeds: [emptyEmbed] });
+    }
 
     const current = player.queue.current;
     const tracks = player.queue
       .slice(0, 10)
-      .map((t, i) => `${i + 1}. [${t.title}](${t.uri})`);
+      .map((t, i) => `**${i + 1}.** [${t.title}](${t.uri})`);
 
     const embed = new EmbedBuilder()
-      .setColor("Blurple")
+      .setColor("Gold")
       .setTitle("🎵 Queue")
       .setDescription(
-        `**Now:** [${current.title}](${current.uri})\n\n${tracks.join("\n")}`,
+        `**Now Playing:**\n[${current.title}](${current.uri})\n\n**Up Next:**\n${tracks.join("\n")}`,
       )
-      .setFooter({ text: `${player.queue.length} songs total` });
+      .setFooter({ text: `${player.queue.length} songs waiting` });
 
     return interaction.reply({ embeds: [embed] });
   }

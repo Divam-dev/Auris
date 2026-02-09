@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from "discord.js";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
@@ -18,17 +18,22 @@ export default class Leave extends Command {
     if (!member) return;
 
     const player = this.client.kazagumo.players.get(interaction.guildId);
+    const embed = new EmbedBuilder()
+      .setColor("Green")
+      .setDescription(`👋 **Disconnected from <#${member.voice.channelId}>**`);
 
     if (player) {
       player.destroy();
-      return interaction.reply(
-        `👋 **Disconnected from <#${member.voice.channelId}>**`,
-      );
+      return interaction.reply({
+        embeds: [embed],
+        flags: MessageFlags.Ephemeral,
+      });
     } else {
       this.client.kazagumo.shoukaku.leaveVoiceChannel(interaction.guildId);
-      return interaction.reply(
-        `👋 **Disconnected from <#${member.voice.channelId}>**`,
-      );
+      return interaction.reply({
+        embeds: [embed],
+        flags: MessageFlags.Ephemeral,
+      });
     }
   }
 }

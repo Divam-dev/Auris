@@ -2,6 +2,7 @@ import {
   ChatInputCommandInteraction,
   GuildMember,
   MessageFlags,
+  EmbedBuilder,
 } from "discord.js";
 import AurisClient from "../structures/Client";
 import { KazagumoPlayer } from "kazagumo";
@@ -13,9 +14,15 @@ export class Utils {
     const member = interaction.member as GuildMember;
 
     if (!member?.voice?.channelId) {
+      const embed = new EmbedBuilder()
+        .setColor("Red")
+        .setDescription(
+          "❌ You must be in a voice channel to use this command",
+        );
+
       await interaction.reply({
-        content: "❌ You need to be in a voice channel!",
-        flags: MessageFlags.Ephemeral,
+        embeds: [embed],
+        flags: [MessageFlags.Ephemeral],
       });
       return null;
     }
@@ -23,9 +30,13 @@ export class Utils {
     const botChannel = interaction.guild?.members.me?.voice.channelId;
 
     if (botChannel && member.voice.channelId !== botChannel) {
+      const embed = new EmbedBuilder()
+        .setColor("Red")
+        .setDescription("❌ You must be in the same voice channel as the bot");
+
       await interaction.reply({
-        content: "❌ You must be in the same voice channel as me!",
-        flags: MessageFlags.Ephemeral,
+        embeds: [embed],
+        flags: [MessageFlags.Ephemeral],
       });
       return null;
     }
@@ -40,9 +51,13 @@ export class Utils {
     const player = client.kazagumo.players.get(interaction.guildId!);
 
     if (!player || !player.queue.current) {
+      const embed = new EmbedBuilder()
+        .setColor("Red")
+        .setDescription("❌ No song is currently playing");
+
       await interaction.reply({
-        content: "❌ No song is currently playing!",
-        flags: MessageFlags.Ephemeral,
+        embeds: [embed],
+        flags: [MessageFlags.Ephemeral],
       });
       return null;
     }

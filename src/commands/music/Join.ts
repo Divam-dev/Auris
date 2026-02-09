@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from "discord.js";
 import { PlayerState } from "kazagumo";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
@@ -15,7 +15,7 @@ export default class Join extends Command {
   }
 
   async execute(interaction: any) {
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const member = await Utils.sameVoiceChannel(interaction);
     if (!member) return interaction.deleteReply();
@@ -48,21 +48,26 @@ export default class Join extends Command {
         player.setVoiceChannel(member.voice.channelId!);
       }
 
-      return interaction.editReply(
-        `👋 **Joined** <#${member.voice.channelId}>!`,
-      );
+      const embed = new EmbedBuilder()
+        .setColor("Green")
+        .setDescription(`👋 **Joined** <#${member.voice.channelId}>!`);
+
+      return interaction.editReply({ embeds: [embed] });
     } catch (error: any) {
+      const embed = new EmbedBuilder().setColor("Red");
+
       if (
         player?.state === PlayerState.CONNECTED ||
         error.message?.includes("already connected")
       ) {
-        return interaction.editReply(
-          `👋 **Joined** <#${member.voice.channelId}>!`,
-        );
+        embed.setColor("Green");
+        embed.setDescription(`👋 **Joined** <#${member.voice.channelId}>!`);
+        return interaction.editReply({ embeds: [embed] });
       }
 
       console.error("Join Error:", error);
-      return interaction.editReply("❌ Failed to join the channel.");
+      embed.setDescription("❌ Failed to join the channel.");
+      return interaction.editReply({ embeds: [embed] });
     }
   }
 }

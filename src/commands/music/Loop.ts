@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
@@ -32,16 +32,22 @@ export default class Loop extends Command {
     if (!player) return;
 
     const mode = interaction.options.getString("mode");
+    let resultMode = "";
 
     if (mode) {
       player.setLoop(mode as "none" | "track" | "queue");
-      return interaction.reply(`🔁 Loop set to: **${mode}**`);
+      resultMode = mode;
+    } else {
+      const modes = ["none", "track", "queue"] as const;
+      const nextMode = modes[(modes.indexOf(player.loop) + 1) % modes.length];
+      player.setLoop(nextMode);
+      resultMode = nextMode;
     }
 
-    const modes = ["none", "track", "queue"] as const;
-    const nextMode = modes[(modes.indexOf(player.loop) + 1) % modes.length];
+    const embed = new EmbedBuilder()
+      .setColor("Green")
+      .setDescription(`🔁 Loop set to: **${resultMode}**`);
 
-    player.setLoop(nextMode);
-    return interaction.reply(`🔁 Loop mode: **${nextMode}**`);
+    return interaction.reply({ embeds: [embed] });
   }
 }
