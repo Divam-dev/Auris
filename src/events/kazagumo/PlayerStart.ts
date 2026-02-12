@@ -26,7 +26,6 @@ export default class PlayerStart extends KazagumoEvent {
     }
 
     const duration = track.length || 0;
-    const timeString = `${Utils.formatTime(0)} / ${Utils.formatTime(duration)}`;
 
     const embed = new EmbedBuilder()
       .setColor("Gold")
@@ -38,7 +37,7 @@ export default class PlayerStart extends KazagumoEvent {
         `**[${track.title}](${track.uri})**\n\n` +
           `🖌️ **Author:** ${track.author}\n` +
           `👤 **Requester:** ${track.requester ?? "Unknown"}\n` +
-          `🕒 **Duration:** \`${timeString}\`\n\n`,
+          `🕒 **Duration:** \`${Utils.formatTime(duration)}\`\n\n`,
       )
       .setThumbnail(track.thumbnail || null);
 
