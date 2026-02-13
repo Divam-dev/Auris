@@ -24,7 +24,10 @@ export default class Clear extends Command {
         .setColor("Red")
         .setDescription("❌ The queue is already empty.");
 
-      return interaction.reply({ embeds: [embed] });
+      return interaction.reply({
+        embeds: [embed],
+        flags: MessageFlags.Ephemeral,
+      });
     }
 
     player.queue.clear();

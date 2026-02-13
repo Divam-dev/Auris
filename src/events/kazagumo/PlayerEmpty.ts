@@ -1,4 +1,4 @@
-import { TextChannel, EmbedBuilder } from "discord.js";
+import { TextChannel, EmbedBuilder, Message } from "discord.js";
 import { KazagumoPlayer } from "kazagumo";
 import KazagumoEvent from "../../structures/KazagumoEvent";
 import AurisClient from "../../structures/Client";
@@ -15,6 +15,13 @@ export default class PlayerEmpty extends KazagumoEvent {
       player.textId!,
     ) as TextChannel;
 
+    const lastMessage = player.data.get("nowPlayingMessage") as Message;
+    if (lastMessage) {
+      try {
+        if (lastMessage.deletable) await lastMessage.delete();
+      } catch (e) {}
+    }
+
     if (channel) {
       const embed = new EmbedBuilder()
         .setColor("Gold")
@@ -24,7 +31,10 @@ export default class PlayerEmpty extends KazagumoEvent {
       await channel.send({ embeds: [embed] });
     }
 
-    setTimeout(async () => {
+    const existingTimeout = player.data.get("emptyTimeout") as NodeJS.Timeout;
+    if (existingTimeout) clearTimeout(existingTimeout);
+
+    const timeout = setTimeout(async () => {
       if (player && player.queue.size === 0 && !player.queue.current) {
         if (channel) {
           const leaveEmbed = new EmbedBuilder()
@@ -34,11 +44,13 @@ export default class PlayerEmpty extends KazagumoEvent {
               "I left the voice channel after being alone for 1 minute.",
             );
 
-          await channel.send({ embeds: [leaveEmbed] });
+          await channel.send({ embeds: [leaveEmbed] }).catch(() => {});
         }
 
         player.destroy();
       }
     }, 60000);
+
+    player.data.set("emptyTimeout", timeout);
   }
 }

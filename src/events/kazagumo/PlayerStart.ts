@@ -10,18 +10,28 @@ export default class PlayerStart extends KazagumoEvent {
   }
 
   async execute(player: KazagumoPlayer, track: KazagumoTrack) {
+    const emptyTimeout = player.data.get("emptyTimeout") as NodeJS.Timeout;
+    if (emptyTimeout) {
+      clearTimeout(emptyTimeout);
+      player.data.delete("emptyTimeout");
+    }
+
+    const lastTrackId = player.data.get("lastTrackId") as string;
+    if (player.loop === "track" && lastTrackId === track.identifier) {
+      return;
+    }
+
+    player.data.set("lastTrackId", track.identifier);
+
     const channel = this.client.channels.cache.get(
       player.textId!,
     ) as TextChannel;
     if (!channel) return;
 
     const lastMessage = player.data.get("nowPlayingMessage") as Message;
-
     if (lastMessage) {
       try {
-        if (lastMessage.deletable) {
-          await lastMessage.delete();
-        }
+        if (lastMessage.deletable) await lastMessage.delete();
       } catch (e) {}
     }
 
