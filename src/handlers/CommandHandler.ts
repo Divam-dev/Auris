@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import AurisClient from "../structures/Client";
 import Command from "../structures/Command";
+import { logger } from "../structures/Logger";
 
 export default class CommandHandler {
   constructor(private client: AurisClient) {}
@@ -25,6 +26,8 @@ export default class CommandHandler {
         if (CommandClass && CommandClass.prototype instanceof Command) {
           const command = new CommandClass(this.client);
           this.client.commands.set(command.data.name, command);
+
+          logger.debug(`Loaded command: ${command.data.name}`);
         }
       }
     }

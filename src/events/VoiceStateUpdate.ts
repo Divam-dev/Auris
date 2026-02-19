@@ -1,6 +1,7 @@
 import { VoiceState } from "discord.js";
 import Event from "../structures/Event";
 import AurisClient from "../structures/Client";
+import { logger } from "../structures/Logger";
 
 export default class VoiceStateUpdate extends Event {
   constructor(client: AurisClient) {
@@ -15,7 +16,7 @@ export default class VoiceStateUpdate extends Event {
 
       if (player) {
         player.destroy();
-        console.log(
+        logger.warn(
           `Player destroyed for guild ${oldState.guild.name} (Force Disconnect)`,
         );
       }

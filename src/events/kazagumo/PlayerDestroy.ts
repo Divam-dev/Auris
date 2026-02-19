@@ -24,6 +24,6 @@ export default class PlayerDestroy extends KazagumoEvent {
       } catch (e) {}
     }
 
-    console.log(`🗑️ Player destroyed for guild ${player.guildId}`);
+    this.client.logger.info(`🗑️ Player destroyed for guild ${player.guildId}`);
   }
 }

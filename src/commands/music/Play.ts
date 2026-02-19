@@ -2,6 +2,7 @@ import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
+import { logger } from "../../structures/Logger";
 
 export default class Play extends Command {
   constructor(client: AurisClient) {
@@ -36,12 +37,32 @@ export default class Play extends Command {
       deaf: true,
     });
 
+    logger.debug(`Searching for: ${query}`);
+
     const result = await this.client.kazagumo.search(query, {
       requester: interaction.user,
     });
 
-    if (!result.tracks.length)
-      return interaction.editReply("❌ No results found");
+    logger.debug(`Result Type: ${result.type}`);
+
+    if (!result.tracks.length) {
+      logger.debug(`Empty Result Dump: ${JSON.stringify(result, null, 2)}`);
+
+      const error = (
+        result as { exception?: { message: string; severity: string } }
+      ).exception;
+
+      if (error) {
+        logger.error(`Lavalink Exception:`, error);
+        return interaction.editReply(
+          `❌ **Load Failed:** \`${error.message || "Unknown Lavalink Error"}\`\n*Severity: ${error.severity || "Unknown"}*`,
+        );
+      }
+
+      return interaction.editReply(
+        "❌ No results found. (Check console for debug dump)",
+      );
+    }
 
     if (result.type === "PLAYLIST") {
       for (const track of result.tracks) player.queue.add(track);
@@ -90,6 +111,10 @@ export default class Play extends Command {
   async autocomplete(interaction: any) {
     const focused = interaction.options.getFocused();
     if (!focused) return interaction.respond([]);
+
+    if (/^https?:\/\//.test(focused)) {
+      return interaction.respond([]);
+    }
 
     try {
       const result = await this.client.kazagumo.search(focused, {

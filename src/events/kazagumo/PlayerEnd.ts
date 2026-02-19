@@ -8,6 +8,8 @@ export default class PlayerEnd extends KazagumoEvent {
   }
 
   async execute(player: KazagumoPlayer, track: KazagumoTrack) {
-    console.log(`✅ Track ended: ${track.title} in guild ${player.guildId}`);
+    this.client.logger.success(
+      `✅ Track ended: ${track?.title ?? "Unknown Title"} in guild ${player.guildId}`,
+    );
   }
 }

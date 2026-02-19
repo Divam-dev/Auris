@@ -9,7 +9,7 @@ export default class PlayerEmpty extends KazagumoEvent {
   }
 
   async execute(player: KazagumoPlayer) {
-    console.log(`🎵 Queue empty for guild ${player.guildId}`);
+    this.client.logger.info(`🎵 Queue empty for guild ${player.guildId}`);
 
     const channel = this.client.channels.cache.get(
       player.textId!,

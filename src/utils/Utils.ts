@@ -20,10 +20,14 @@ export class Utils {
           "❌ You must be in a voice channel to use this command",
         );
 
-      await interaction.reply({
-        embeds: [embed],
-        flags: [MessageFlags.Ephemeral],
-      });
+      if (interaction.deferred || interaction.replied) {
+        await interaction.editReply({ embeds: [embed] });
+      } else {
+        await interaction.reply({
+          embeds: [embed],
+          flags: [MessageFlags.Ephemeral],
+        });
+      }
       return null;
     }
 
@@ -34,10 +38,14 @@ export class Utils {
         .setColor("Red")
         .setDescription("❌ You must be in the same voice channel as the bot");
 
-      await interaction.reply({
-        embeds: [embed],
-        flags: [MessageFlags.Ephemeral],
-      });
+      if (interaction.deferred || interaction.replied) {
+        await interaction.editReply({ embeds: [embed] });
+      } else {
+        await interaction.reply({
+          embeds: [embed],
+          flags: [MessageFlags.Ephemeral],
+        });
+      }
       return null;
     }
 
@@ -55,10 +63,14 @@ export class Utils {
         .setColor("Red")
         .setDescription("❌ No song is currently playing");
 
-      await interaction.reply({
-        embeds: [embed],
-        flags: [MessageFlags.Ephemeral],
-      });
+      if (interaction.deferred || interaction.replied) {
+        await interaction.editReply({ embeds: [embed] });
+      } else {
+        await interaction.reply({
+          embeds: [embed],
+          flags: [MessageFlags.Ephemeral],
+        });
+      }
       return null;
     }
 

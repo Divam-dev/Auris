@@ -3,6 +3,7 @@ import { KazagumoPlayer, KazagumoTrack } from "kazagumo";
 import KazagumoEvent from "../../structures/KazagumoEvent";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
+import { logger } from "../../structures/Logger";
 
 export default class PlayerStart extends KazagumoEvent {
   constructor(client: AurisClient) {
@@ -55,7 +56,7 @@ export default class PlayerStart extends KazagumoEvent {
       const message = await channel.send({ embeds: [embed] });
       player.data.set("nowPlayingMessage", message);
     } catch (e) {
-      console.error("Could not send playerStart message", e);
+      logger.error("Could not send playerStart message", e);
     }
   }
 }

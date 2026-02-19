@@ -3,6 +3,7 @@ import { PlayerState } from "kazagumo";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
+import { logger } from "../../structures/Logger";
 
 export default class Join extends Command {
   constructor(client: AurisClient) {
@@ -18,7 +19,7 @@ export default class Join extends Command {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const member = await Utils.sameVoiceChannel(interaction);
-    if (!member) return interaction.deleteReply();
+    if (!member) return;
 
     const botVoiceChannel = interaction.guild?.members.me?.voice.channelId;
     let player = this.client.kazagumo.players.get(interaction.guildId);
@@ -65,7 +66,7 @@ export default class Join extends Command {
         return interaction.editReply({ embeds: [embed] });
       }
 
-      console.error("Join Error:", error);
+      logger.error("Join Error:", error);
       embed.setDescription("❌ Failed to join the channel.");
       return interaction.editReply({ embeds: [embed] });
     }

@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import AurisClient from "../structures/Client";
 import Event from "../structures/Event";
+import { logger } from "../structures/Logger";
 
 export default class EventHandler {
   constructor(private client: AurisClient) {}
@@ -26,6 +27,8 @@ export default class EventHandler {
         } else {
           this.client.on(event.name, (...args) => event.execute(...args));
         }
+
+        logger.debug(`Loaded event: ${event.name}`);
       }
     }
   }
