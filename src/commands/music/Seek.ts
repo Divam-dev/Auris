@@ -26,6 +26,16 @@ export default class Seek extends Command {
     const player = await Utils.isPlaying(this.client, interaction);
     if (!player) return;
 
+    if (player.queue.current?.isStream) {
+      const embed = new EmbedBuilder()
+        .setColor("Red")
+        .setDescription("❌ **You cannot seek within a live stream!**");
+      return interaction.reply({
+        embeds: [embed],
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
     if (!player.queue.current?.isSeekable) {
       const embed = new EmbedBuilder()
         .setColor("Red")

@@ -60,7 +60,7 @@ export default class Play extends Command {
       }
 
       return interaction.editReply(
-        "❌ No results found. (Check console for debug dump)",
+        "❌ No results found. Please try a different query.",
       );
     }
 
@@ -86,7 +86,11 @@ export default class Play extends Command {
       if (!player.playing) await player.play();
 
       const posString = position === 0 ? "Now Playing" : `#${position}`;
-      const duration = Utils.formatTime(track.length || 0);
+      
+      const duration = track.isStream 
+        ? "🔴 LIVE" 
+        : Utils.formatTime(track.length || 0);
+        
       const requester = interaction.user.username;
 
       const embed = new EmbedBuilder()
@@ -121,13 +125,13 @@ export default class Play extends Command {
         requester: interaction.user,
       });
 
-      const choices = result.tracks.slice(0, 25).map((t) => ({
-        name: `${t.title} - ${t.author} - ${Utils.formatTime(t.length ?? 0)}`.substring(
-          0,
-          100,
-        ),
-        value: t.uri || t.title,
-      }));
+      const choices = result.tracks.slice(0, 25).map((t) => {
+        const lengthStr = t.isStream ? "🔴 LIVE" : Utils.formatTime(t.length ?? 0);
+        return {
+          name: `${t.title} - ${t.author} - ${lengthStr}`.substring(0, 100),
+          value: t.uri || t.title,
+        };
+      });
 
       await interaction.respond(choices);
     } catch (error) {
