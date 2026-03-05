@@ -1,6 +1,7 @@
 import {
   SlashCommandBuilder,
   EmbedBuilder,
+  ChatInputCommandInteraction,
   version as djsVersion,
 } from "discord.js";
 import Command from "../../structures/Command";
@@ -16,7 +17,7 @@ export default class Info extends Command {
     );
   }
 
-  async execute(interaction: any) {
+  async execute(interaction: ChatInputCommandInteraction) {
     const node = this.client.kazagumo.shoukaku.nodes.get("LocalNode");
     const uptime = process.uptime();
 

@@ -18,9 +18,9 @@ export default abstract class Command {
     this.data = data;
   }
 
-  abstract execute(interaction: ChatInputCommandInteraction): Promise<any>;
+  abstract execute(interaction: ChatInputCommandInteraction): Promise<unknown>;
 
-  async autocomplete(interaction: AutocompleteInteraction): Promise<any> {
+  async autocomplete(interaction: AutocompleteInteraction): Promise<unknown> {
     return interaction.respond([]);
   }
 }

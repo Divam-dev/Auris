@@ -1,4 +1,9 @@
-import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from "discord.js";
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  MessageFlags,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
@@ -19,7 +24,7 @@ export default class Seek extends Command {
     );
   }
 
-  async execute(interaction: any) {
+  async execute(interaction: ChatInputCommandInteraction) {
     const member = await Utils.sameVoiceChannel(interaction);
     if (!member) return;
 

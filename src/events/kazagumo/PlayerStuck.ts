@@ -9,7 +9,7 @@ export default class PlayerStuck extends KazagumoEvent {
     super(client, "playerStuck");
   }
 
-  async execute(player: KazagumoPlayer, data: any) {
+  async execute(player: KazagumoPlayer, data: unknown) {
     logger.warn("⚠️ Player Stuck:", data);
 
     const channel = this.client.channels.cache.get(

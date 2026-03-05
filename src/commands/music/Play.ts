@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, AutocompleteInteraction } from "discord.js";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
@@ -21,7 +21,7 @@ export default class Play extends Command {
     );
   }
 
-  async execute(interaction: any) {
+  async execute(interaction: ChatInputCommandInteraction) {
     const member = await Utils.sameVoiceChannel(interaction);
     if (!member) return;
 
@@ -29,7 +29,7 @@ export default class Play extends Command {
     await interaction.deferReply();
 
     const player = await this.client.kazagumo.createPlayer({
-      guildId: interaction.guildId,
+      guildId: interaction.guildId!,
       textId: interaction.channelId,
       voiceId: member.voice.channelId!,
       shardId: interaction.guild?.shardId || 0,
@@ -112,7 +112,7 @@ export default class Play extends Command {
     }
   }
 
-  async autocomplete(interaction: any) {
+  async autocomplete(interaction: AutocompleteInteraction) {
     const focused = interaction.options.getFocused();
     if (!focused) return interaction.respond([]);
 

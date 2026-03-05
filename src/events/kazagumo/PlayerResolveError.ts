@@ -1,5 +1,5 @@
 import { TextChannel } from "discord.js";
-import { KazagumoPlayer } from "kazagumo";
+import { KazagumoPlayer, KazagumoTrack } from "kazagumo";
 import KazagumoEvent from "../../structures/KazagumoEvent";
 import AurisClient from "../../structures/Client";
 import { logger } from "../../structures/Logger";
@@ -9,7 +9,7 @@ export default class PlayerResolveError extends KazagumoEvent {
     super(client, "playerResolveError");
   }
 
-  async execute(player: KazagumoPlayer, track: any, error: Error) {
+  async execute(player: KazagumoPlayer, track: KazagumoTrack, error: Error) {
     logger.error("❌ Track Resolve Error:", error.message);
 
     const channel = this.client.channels.cache.get(

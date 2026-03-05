@@ -1,4 +1,8 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
@@ -6,14 +10,14 @@ import { Utils } from "../../utils/Utils";
 export default class Autoplay extends Command {
   constructor(client: AurisClient) {
     super(
-        client,
-        new SlashCommandBuilder()
-            .setName("autoplay")
-            .setDescription("Toggle autoplay mode"),
+      client,
+      new SlashCommandBuilder()
+        .setName("autoplay")
+        .setDescription("Toggle autoplay mode"),
     );
   }
 
-  async execute(interaction: any) {
+  async execute(interaction: ChatInputCommandInteraction) {
     const member = await Utils.sameVoiceChannel(interaction);
     if (!member) return;
 
@@ -24,8 +28,10 @@ export default class Autoplay extends Command {
     player.data.set("autoplay", !isAutoplay);
 
     const embed = new EmbedBuilder()
-        .setColor(isAutoplay ? "Red" : "Green")
-        .setDescription(`📻 Autoplay is now **${!isAutoplay ? "enabled" : "disabled"}**`);
+      .setColor(isAutoplay ? "Red" : "Green")
+      .setDescription(
+        `📻 Autoplay is now **${!isAutoplay ? "enabled" : "disabled"}**`,
+      );
 
     return interaction.reply({ embeds: [embed] });
   }

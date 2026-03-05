@@ -5,6 +5,9 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  ButtonComponent,
+  ComponentType,
+  ActionRow,
 } from "discord.js";
 import Event from "../structures/Event";
 import AurisClient from "../structures/Client";
@@ -54,22 +57,23 @@ export default class InteractionCreate extends Event {
         const btnInteraction =
           interaction as import("discord.js").ButtonInteraction;
 
-        const newComponents = btnInteraction.message.components.map(
-          (row: any) => {
-            const actionRow = new ActionRowBuilder<ButtonBuilder>();
+        const newComponents = btnInteraction.message.components.map((row) => {
+          const actionRow = row as ActionRow<ButtonComponent>;
+          const newActionRow = new ActionRowBuilder<ButtonBuilder>();
 
-            row.components.forEach((component: any) => {
-              if (component.type === 2) {
-                const button = ButtonBuilder.from(component);
-                if (component.customId === customIdToChange) {
-                  modifier(button);
-                }
-                actionRow.addComponents(button);
+          actionRow.components.forEach((component) => {
+            if (component.type === ComponentType.Button) {
+              const button = ButtonBuilder.from(component);
+
+              if (component.customId === customIdToChange) {
+                modifier(button);
               }
-            });
-            return actionRow;
-          },
-        );
+              newActionRow.addComponents(button);
+            }
+          });
+
+          return newActionRow;
+        });
 
         await btnInteraction.update({ components: newComponents });
       };

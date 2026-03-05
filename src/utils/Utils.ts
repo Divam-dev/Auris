@@ -3,6 +3,7 @@ import {
   GuildMember,
   MessageFlags,
   EmbedBuilder,
+  PermissionsBitField
 } from "discord.js";
 import AurisClient from "../structures/Client";
 import { KazagumoPlayer } from "kazagumo";
@@ -13,7 +14,7 @@ export class Utils {
   ): Promise<GuildMember | null> {
     const member = interaction.member as GuildMember;
 
-    if (!member?.voice?.channelId) {
+    if (!member?.voice?.channelId || !member.voice.channel) {
       const embed = new EmbedBuilder()
         .setColor("Red")
         .setDescription(
@@ -29,6 +30,31 @@ export class Utils {
         });
       }
       return null;
+    }
+
+    const botMember = interaction.guild?.members.me;
+    if (botMember) {
+      const permissions = member.voice.channel.permissionsFor(botMember);
+      if (
+        !permissions.has(PermissionsBitField.Flags.ViewChannel) ||
+        !permissions.has(PermissionsBitField.Flags.Connect)
+      ) {
+        const embed = new EmbedBuilder()
+          .setColor("Red")
+          .setDescription(
+            "❌ Bot do not have permission to view or connect to your voice channel!",
+          );
+
+        if (interaction.deferred || interaction.replied) {
+          await interaction.editReply({ embeds: [embed] });
+        } else {
+          await interaction.reply({
+            embeds: [embed],
+            flags: [MessageFlags.Ephemeral],
+          });
+        }
+        return null;
+      }
     }
 
     const botChannel = interaction.guild?.members.me?.voice.channelId;

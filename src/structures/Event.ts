@@ -11,5 +11,5 @@ export default abstract class Event {
     this.once = once;
   }
 
-  abstract execute(...args: any[]): Promise<any>;
+  abstract execute(...args: unknown[]): Promise<unknown>;
 }

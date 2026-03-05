@@ -1,4 +1,9 @@
-import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from "discord.js";
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  MessageFlags,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
@@ -13,11 +18,11 @@ export default class Stop extends Command {
     );
   }
 
-  async execute(interaction: any) {
+  async execute(interaction: ChatInputCommandInteraction) {
     const member = await Utils.sameVoiceChannel(interaction);
     if (!member) return;
 
-    const player = this.client.kazagumo.players.get(interaction.guildId);
+    const player = this.client.kazagumo.players.get(interaction.guildId!);
 
     if (!player) {
       const errorEmbed = new EmbedBuilder()

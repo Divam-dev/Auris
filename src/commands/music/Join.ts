@@ -1,4 +1,9 @@
-import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from "discord.js";
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  MessageFlags,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import { PlayerState } from "kazagumo";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
@@ -15,14 +20,14 @@ export default class Join extends Command {
     );
   }
 
-  async execute(interaction: any) {
+  async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const member = await Utils.sameVoiceChannel(interaction);
     if (!member) return;
 
     const botVoiceChannel = interaction.guild?.members.me?.voice.channelId;
-    let player = this.client.kazagumo.players.get(interaction.guildId);
+    let player = this.client.kazagumo.players.get(interaction.guildId!);
 
     if (player && !botVoiceChannel) {
       player.destroy();
@@ -31,7 +36,7 @@ export default class Join extends Command {
 
     if (!player) {
       player = await this.client.kazagumo.createPlayer({
-        guildId: interaction.guildId,
+        guildId: interaction.guildId!,
         textId: interaction.channelId,
         voiceId: member.voice.channelId!,
         shardId: interaction.guild?.shardId || 0,
@@ -54,12 +59,14 @@ export default class Join extends Command {
         .setDescription(`👋 **Joined** <#${member.voice.channelId}>!`);
 
       return interaction.editReply({ embeds: [embed] });
-    } catch (error: any) {
+    } catch (error: unknown) {
       const embed = new EmbedBuilder().setColor("Red");
+
+      const errorMessage = error instanceof Error ? error.message : "";
 
       if (
         player?.state === PlayerState.CONNECTED ||
-        error.message?.includes("already connected")
+        errorMessage.includes("already connected")
       ) {
         embed.setColor("Green");
         embed.setDescription(`👋 **Joined** <#${member.voice.channelId}>!`);

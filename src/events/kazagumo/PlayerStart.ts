@@ -5,6 +5,7 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  User,
 } from "discord.js";
 import { KazagumoPlayer, KazagumoTrack } from "kazagumo";
 import KazagumoEvent from "../../structures/KazagumoEvent";
@@ -56,9 +57,10 @@ export default class PlayerStart extends KazagumoEvent {
     const duration = track.length || 0;
 
     const isAutoplay = track.requester === "Autoplay";
+
     const requesterName = isAutoplay
       ? "🤖 Autoplay"
-      : `<@${(track.requester as any).id}>`;
+      : `<@${(track.requester as User).id}>`;
 
     let trackUrl = track.uri || "";
     if (trackUrl.includes("spotify")) {

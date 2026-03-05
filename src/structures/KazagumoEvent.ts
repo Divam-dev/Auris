@@ -9,5 +9,5 @@ export default abstract class KazagumoEvent {
     this.name = name;
   }
 
-  abstract execute(...args: any[]): Promise<any>;
+  abstract execute(...args: unknown[]): Promise<unknown>;
 }

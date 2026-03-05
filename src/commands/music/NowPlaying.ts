@@ -1,4 +1,8 @@
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import Command from "../../structures/Command";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
@@ -13,8 +17,8 @@ export default class NowPlaying extends Command {
     );
   }
 
-  async execute(interaction: any) {
-    const player = this.client.kazagumo.players.get(interaction.guildId);
+  async execute(interaction: ChatInputCommandInteraction) {
+    const player = this.client.kazagumo.players.get(interaction.guildId!);
 
     if (!player || !player.queue.current) {
       const embed = new EmbedBuilder()
