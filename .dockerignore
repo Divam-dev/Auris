@@ -1,0 +1,9 @@
+node_modules
+dist
+.git
+.vscode
+.idea
+.env
+lavalink/
+Dockerfile
+docker-compose.yml

@@ -1,0 +1,46 @@
+services:
+  # --------------------------------
+  # Lavalink (Audio Engine)
+  # --------------------------------
+  lavalink:
+    # Profiles allow you to toggle this container on or off
+    profiles: [lavalink, all]
+    container_name: auris_lavalink
+    image: ghcr.io/lavalink-devs/lavalink:latest
+    restart: unless-stopped
+    environment:
+      - _JAVA_OPTIONS=-Xmx2G # Limits Java memory usage to 2GB
+      - SERVER_PORT=2333
+    volumes:
+      - ./lavalink/application.yml:/opt/Lavalink/application.yml
+      - ./lavalink/plugins/:/opt/Lavalink/plugins/
+    networks:
+      - auris_network
+    ports:
+      - "2333:2333"
+    healthcheck:
+      test: 'curl -H "Authorization: youshallnotpass" -s http://localhost:2333/version || exit 1'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  # --------------------------------
+  # Auris (Discord Bot)
+  # --------------------------------
+  bot:
+    container_name: auris_bot
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      lavalink:
+        condition: service_healthy
+        restart: true
+    networks:
+      - auris_network
+
+networks:
+  auris_network:
+    name: auris_network

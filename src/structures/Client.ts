@@ -38,8 +38,8 @@ export default class AurisClient extends Client {
       [
         {
           name: "LocalNode",
-          url: "localhost:2333",
-          auth: "youshallnotpass",
+          url: process.env.LAVALINK_URL || "localhost:2333",
+          auth: process.env.LAVALINK_AUTH || "youshallnotpass",
           secure: false,
         },
       ],

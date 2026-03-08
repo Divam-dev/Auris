@@ -37,6 +37,8 @@ plugins:
       - WEB
     oauth:
       enabled: false
+    remoteCipher:
+      url: "https://cipher.kikkia.dev/" # URL to a remote cipher service that decrypts YouTube signatures.
 
   lavasrc:
     providers:
@@ -55,3 +57,7 @@ plugins:
       countryCode: "US"
       playlistLoadLimit: 6
       albumLoadLimit: 6
+
+logging:
+  level:
+    lavalink.server.io.RequestLoggingFilter: OFF
