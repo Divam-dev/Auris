@@ -3,7 +3,6 @@ services:
   # Lavalink (Audio Engine)
   # --------------------------------
   lavalink:
-    # Profiles allow you to toggle this container on or off
     profiles: [lavalink, all]
     container_name: auris_lavalink
     image: ghcr.io/lavalink-devs/lavalink:latest
@@ -19,7 +18,7 @@ services:
     ports:
       - "2333:2333"
     healthcheck:
-      test: 'curl -H "Authorization: youshallnotpass" -s http://localhost:2333/version || exit 1'
+      test: 'curl -H "Authorization: $${LAVALINK_AUTH:-youshallnotpass}" -s http://localhost:2333/version || exit 1'
       interval: 10s
       timeout: 5s
       retries: 5
@@ -29,6 +28,7 @@ services:
   # Auris (Discord Bot)
   # --------------------------------
   bot:
+    profiles: [auris, all]
     container_name: auris_bot
     build: .
     restart: unless-stopped
@@ -38,8 +38,20 @@ services:
       lavalink:
         condition: service_healthy
         restart: true
+        required: false
     networks:
       - auris_network
+
+  # --------------------------------
+  # Watchtower (Auto-updater)
+  # --------------------------------
+  watchtower:
+    image: containrrr/watchtower
+    container_name: auris_watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 86400
 
 networks:
   auris_network:
