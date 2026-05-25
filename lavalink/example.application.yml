@@ -6,9 +6,9 @@ server:
 
 lavalink:
   plugins:
-    - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.8.1"
+    - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.8.3"
       snapshot: false
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.0"
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.1"
       snapshot: false
   server:
     password: "youshallnotpass"
@@ -45,7 +45,7 @@ plugins:
       - 'ytsearch:"%ISRC%"'
       - "ytsearch:%QUERY%"
     sources:
-      spotify: false # Add your Spotify credentials to enable Spotify source
+      spotify: false # Add your Spotify credentials to enable Spotify source (Only for Spotify Premium accounts).
       applemusic: false
       deezer: false
       yandexmusic: false

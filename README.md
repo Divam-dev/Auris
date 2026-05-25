@@ -89,7 +89,7 @@ Before starting, make sure you have:
 
 ```bash
 git clone https://github.com/divam/auris.git
-cd auris
+cd Auris
 npm install
 ```
 
