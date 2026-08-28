@@ -1,6 +1,7 @@
 import {
   Interaction,
   GuildMember,
+  Message,
   MessageFlags,
   ActionRowBuilder,
   ButtonBuilder,
@@ -8,9 +9,16 @@ import {
   ButtonComponent,
   ComponentType,
   ActionRow,
+  StringSelectMenuBuilder,
+  StringSelectMenuComponent,
 } from "discord.js";
 import Event from "../structures/Event";
 import AurisClient from "../structures/Client";
+import {
+  applyFilterPreset,
+  isFilterPresetId,
+  updateMessageFilterRow,
+} from "../commands/filters/Filters";
 
 export default class InteractionCreate extends Event {
   constructor(client: AurisClient) {
@@ -26,6 +34,70 @@ export default class InteractionCreate extends Event {
     if (interaction.isChatInputCommand()) {
       const command = this.client.commands.get(interaction.commandName);
       if (command) await command.execute(interaction);
+    }
+
+    if (
+      interaction.isStringSelectMenu() &&
+      interaction.customId === "filter_select"
+    ) {
+      const member = interaction.member as GuildMember;
+      const botChannel = interaction.guild?.members.me?.voice.channelId;
+
+      if (
+        !member?.voice?.channelId ||
+        (botChannel && member.voice.channelId !== botChannel)
+      ) {
+        return interaction.reply({
+          content: "❌ You must be in the same voice channel as the bot.",
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+
+      const player = this.client.kazagumo.players.get(interaction.guildId!);
+      if (!player || !player.queue.current) {
+        return interaction.reply({
+          content: "❌ No music is currently playing.",
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+
+      const presetId = interaction.values[0];
+      if (!isFilterPresetId(presetId)) {
+        return interaction.reply({
+          content: "❌ That filter is not available.",
+          flags: MessageFlags.Ephemeral,
+        });
+      }
+
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+      try {
+        const reply = await applyFilterPreset(player, presetId);
+
+        // Keep the menu the user picked from in sync as well. The now
+        // playing message is already refreshed by applyFilterPreset.
+        const nowPlayingMessage = player.data.get("nowPlayingMessage") as
+          | Message
+          | undefined;
+        if (
+          !nowPlayingMessage ||
+          interaction.message.id !== nowPlayingMessage.id
+        ) {
+          try {
+            await updateMessageFilterRow(
+              interaction.message as Message,
+              player,
+            );
+          } catch (e) {}
+        }
+
+        return interaction.editReply({ content: reply });
+      } catch (error) {
+        this.client.logger.error("Could not apply audio filter", error);
+        return interaction.editReply({
+          content: "❌ Could not apply that filter. Please try again.",
+        });
+      }
     }
 
     if (interaction.isButton() && interaction.customId.startsWith("music_")) {
@@ -58,8 +130,12 @@ export default class InteractionCreate extends Event {
           interaction as import("discord.js").ButtonInteraction;
 
         const newComponents = btnInteraction.message.components.map((row) => {
-          const actionRow = row as ActionRow<ButtonComponent>;
-          const newActionRow = new ActionRowBuilder<ButtonBuilder>();
+          const actionRow = row as ActionRow<
+            ButtonComponent | StringSelectMenuComponent
+          >;
+          const newActionRow = new ActionRowBuilder<
+            ButtonBuilder | StringSelectMenuBuilder
+          >();
 
           actionRow.components.forEach((component) => {
             if (component.type === ComponentType.Button) {
@@ -69,6 +145,10 @@ export default class InteractionCreate extends Event {
                 modifier(button);
               }
               newActionRow.addComponents(button);
+            }
+
+            if (component.type === ComponentType.StringSelect) {
+              newActionRow.addComponents(StringSelectMenuBuilder.from(component));
             }
           });
 

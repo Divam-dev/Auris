@@ -5,6 +5,7 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  StringSelectMenuBuilder,
   User,
 } from "discord.js";
 import { KazagumoPlayer, KazagumoTrack } from "kazagumo";
@@ -12,6 +13,7 @@ import KazagumoEvent from "../../structures/KazagumoEvent";
 import AurisClient from "../../structures/Client";
 import { Utils } from "../../utils/Utils";
 import { logger } from "../../structures/Logger";
+import { createFilterMenu } from "../../commands/filters/Filters";
 
 export default class PlayerStart extends KazagumoEvent {
   constructor(client: AurisClient) {
@@ -28,6 +30,15 @@ export default class PlayerStart extends KazagumoEvent {
     const lastTrackId = player.data.get("lastTrackId") as string;
     if (player.loop === "track" && lastTrackId === track.identifier) {
       return;
+    }
+
+    if (player.data.has("activeFilter")) {
+      try {
+        await player.shoukaku.clearFilters();
+      } catch (e) {
+        logger.error("Could not clear filter for new track", e);
+      }
+      player.data.delete("activeFilter");
     }
 
     player.data.set("previousTrack", track);
@@ -140,7 +151,13 @@ export default class PlayerStart extends KazagumoEvent {
     try {
       const message = await channel.send({
         embeds: [embed],
-        components: [row1, row2],
+        components: [
+          new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+            createFilterMenu(),
+          ),
+          row1,
+          row2,
+        ],
       });
       player.data.set("nowPlayingMessage", message);
     } catch (e) {

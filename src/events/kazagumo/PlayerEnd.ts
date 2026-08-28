@@ -8,6 +8,14 @@ export default class PlayerEnd extends KazagumoEvent {
   }
 
   async execute(player: KazagumoPlayer, track: KazagumoTrack) {
+    if (player.loop !== "track" && player.data.has("activeFilter")) {
+      try {
+        await player.shoukaku.clearFilters();
+      } catch (e) {}
+
+      player.data.delete("activeFilter");
+    }
+
     this.client.logger.success(
       `Track ended: ${track?.title ?? "Unknown Title"} in guild ${player.guildId}`,
     );

@@ -8,8 +8,9 @@ lavalink:
   plugins:
     - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.8.3"
       snapshot: false
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.1"
-      snapshot: false
+    - dependency: "dev.lavalink.youtube:youtube-plugin:f45bbb7aebfcbc1c553769e04af6cd43afa8b7c3"
+      snapshot: true
+      repository: "https://maven.lavalink.dev/snapshots"
   server:
     password: "youshallnotpass"
     sources:
@@ -23,6 +24,9 @@ lavalink:
     filters:
       volume: true
       equalizer: true
+      karaoke: true
+      timescale: true
+      rotation: true
     bufferDurationMs: 400
 
 plugins:
@@ -33,8 +37,13 @@ plugins:
     allowDirectPlaylistIds: true
     clients:
       - MUSIC
+      - WEBEMBEDDED
       - ANDROID_VR
+      - ANDROID_MUSIC
+      - TV
+      - IOS
       - WEB
+      - MWEB
     oauth:
       enabled: false
     remoteCipher:

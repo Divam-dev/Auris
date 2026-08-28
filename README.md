@@ -52,6 +52,7 @@ Full Docker & Docker Compose support with deployment profiles.
 | `/queue`        | View the current queue          |
 | `/nowplaying`   | Show the currently playing track |
 | `/loop [mode]`  | Set loop mode (off / track / queue)               |
+| `/filter [preset]` | Apply an audio filter preset or pick from the menu |
 | `/shuffle`      | Shuffle the queue                                 |
 | `/seek <time>`  | Seek to a position in the track                   |
 | `/autoplay`     | Toggle autoplay mode                              |
