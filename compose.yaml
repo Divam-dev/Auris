@@ -46,7 +46,7 @@ services:
   # Watchtower (Auto-updater)
   # --------------------------------
   watchtower:
-    image: containrrr/watchtower
+    image: nickfedor/watchtower:latest
     container_name: auris_watchtower
     restart: unless-stopped
     volumes:
